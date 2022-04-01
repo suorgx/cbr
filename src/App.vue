@@ -1,9 +1,10 @@
 <template>
-<div v-if="!isPageLoading" class="page">
+<div v-show="isPageLoading" class="page">Идет загрузка...</div>
+<div v-show="!isPageLoading" class="page">
   <div class="currencies">
     <div class="currency currency_title">
       <div class="currency_charcode">
-        Буквенный код
+        Букв. код
       </div>
       <div class="currency_name">
         Название
@@ -12,7 +13,7 @@
         Стоимость
       </div>
       <div class="currency_gap">
-        Разница c предыдущим значением
+        Изменение
       </div>
     </div>
     <details v-for="currency in currencies" :key="currency.id">
@@ -24,33 +25,33 @@
           {{ currency.Name }}
         </div>  
         <div class="currency_value">
-          {{ `${currency.Value.toFixed(2)}₽` }}
+          {{ `${currency.Value.toFixed(2)} ₽` }}
         </div>
         <div class="currency_gap green" v-if="currency.Value > currency.Previous">
-          <span class="rotate-up">❱</span>{{ `${(-100 + (currency.Value / currency.Previous) * 100).toFixed(2)}%` }}
+          <span class="rotate-up">❱</span>{{ `${(-100 + (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
         </div>
         <div class="currency_gap red" v-else>
-          <span class="rotate-down">❱</span>{{ `${(100 - (currency.Value / currency.Previous) * 100).toFixed(2)}%` }}
+          <span class="rotate-down">❱</span>{{ `${(100 - (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
         </div>
       </summary>
       <div class="currency_description">
         <div class="currency">
-          <p></p>
-          <p>{{  `${this.currentDate.substring(0, 4)} ${this.currentDate.substring(5, 7)} ${this.currentDate.substring(8, 10)}` }}</p>
-          <p>{{  `${currency.Value.toFixed(2)}₽` }}</p>
-          <p></p>
-        </div>
-        <div class="currency">
-          <p></p>
-          <p>{{  `${this.previousDate.substring(0, 4)} ${this.previousDate.substring(5, 7)} ${this.previousDate.substring(8, 10)}` }}</p>
-          <p>{{  `${currency.Previous.toFixed(2)}₽` }}</p>
-          <p></p>
+          <div></div>
+          <div>{{  `${this.currentDate.substring(0, 4)} ${this.currentDate.substring(5, 7)} ${this.currentDate.substring(8, 10)} 11:30 MSK` }}</div>
+          <div>{{  `${currency.Value.toFixed(2)} ₽` }}</div>
+          <div>
+            <div class="currency_gap green" v-if="currency.Value > currency.Previous">
+              <span class="rotate-up">❱</span>{{ `${(-100 + (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
+            </div>
+            <div class="currency_gap red" v-else>
+              <span class="rotate-down">❱</span>{{ `${(100 - (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
+            </div>
+          </div>
         </div>
       </div>
     </details>
   </div>
 </div>
-<div v-else>Идет загрузка...</div>
 </template>
 
 <script>
@@ -60,25 +61,65 @@ export default {
   data() {
     return {
       currencies: [],
+      currenciesPrevious: [],
       currentDate: '',
       previousDate: '',
       isPageLoading: false,
+      count: 1,
     }
   },
   methods: {
     async fetchCurrencies() {
       try {
+        // console.log('Now -', 0)
         this.isPageLoading = true
         const response = await axios.get('https://www.cbr-xml-daily.ru/daily_json.js')
         this.currentDate = response.data.Date
-        this.previousDate = response.data.PreviousDate
         this.currencies = response.data.Valute
       } catch(e) {
         console.log('ошибка 1')
       } finally {
+        await this.fetchPreviousCurrencies()
+      }
+    },
+    async fetchPreviousCurrencies() {
+      try {
+        // console.log('Previous -', 1)
+        this.currenciesPrevious = []
+        let responsePrevious = await axios.get('https://www.cbr-xml-daily.ru/archive/2022/04/01/daily_json.js')
+        this.previousDate = responsePrevious.data.Date
+        this.currenciesPrevious = responsePrevious.data.Valute
+        this.addNewRow(this.currenciesPrevious)
+      } catch(e) {
+        console.log('ошибка 2')
+      } finally {
+        this.count += 1
+        // console.log('count -', this.count)
+        // if (this.count < 10) {
+        //   await this.fetchPreviousCurrencies()
+        // }
+        // if (this.count === 10) {
+        //   this.isPageLoading = false
+        // }
         this.isPageLoading = false
       }
-      
+    },
+    addNewRow(array) {
+      let getCharsCodes = document.getElementsByClassName('currency_charcode')
+        for (let item in array) {
+          for (let i = 0; i < getCharsCodes.length; i++) {
+            if (item === getCharsCodes[i].innerHTML) {
+              let element = document.createElement('div');
+              element.classList.add('currency')
+              if (array[item].Value > array[item].Previous) {
+                element.innerHTML = `<div></div><div>${this.previousDate.substring(0, 4)} ${this.previousDate.substring(5, 7)} ${this.previousDate.substring(8, 10)} 11:30 MSK</div><div>${array[item].Value.toFixed(2)} ₽</div><div class="currency_gap green"><span class="rotate-up">❱</span>${(-100 + (array[item].Value / array[item].Previous) * 100).toFixed(3)}%</div>`
+              } else {
+                element.innerHTML = `<div></div><div>${this.previousDate.substring(0, 4)} ${this.previousDate.substring(5, 7)} ${this.previousDate.substring(8, 10)} 11:30 MSK</div><div>${array[item].Value.toFixed(2)} ₽</div><div class="currency_gap red"><span class="rotate-down">❱</span>${(100 - (array[item].Value / array[item].Previous) * 100).toFixed(3)}%</div>`
+              }
+              getCharsCodes[i].parentNode.parentNode.childNodes[1].appendChild(element);
+            }
+          }
+        }
     },
   },
   mounted() {
@@ -88,11 +129,13 @@ export default {
 </script>
 
 <style lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap');
+
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Roboto Condensed', sans-serif;
   outline: none;
   text-overflow: ellipsis;
   overflow: auto;
@@ -118,18 +161,22 @@ body {
 
 .currency {
   display: grid;
-  grid-template-columns: 14.5% 39.5% 19.5% 24.5%;
+  grid-template-columns: 14% 45% 19% 20%;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  font-size: 13px;
-  line-height: 13px;
-  padding: 15px 10px;
+  font-size: 14px;
+  line-height: 16px;
+  padding: 10px 5px;
 }
 
 .currency_title {
   font-weight: 700;
-  padding: 10px;
+  padding: 10px 5px;
+}
+
+.currency_description .currency {
+  padding: 5px;
 }
 
 details > summary {
@@ -146,8 +193,8 @@ details .currency {
 }
 
 details, .currency_title {
-  box-shadow: 2px 4px 2px rgba($color: #000, $alpha: 0.05);
-  margin-bottom: 10px;
+  box-shadow: 1px 3px 2px rgba($color: #000, $alpha: 0.05);
+  margin-bottom: 12px;
 }
 
 .green {
