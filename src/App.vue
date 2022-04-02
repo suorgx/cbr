@@ -262,5 +262,33 @@ details[open] summary ~ * {
     height: 1.5vw;
     margin-right: 0.25vw
   }
+}
+
+@media screen and (min-width: 900px) {
+  body {
+    padding: 2vw;
+  }
+  .currency {
+    font-size: 2vw;
+    line-height: 2.1vw;
+    padding: 1.7vw 0.8vw 1.7vw 2.5vw;
+  }
+  .currency_title {
+    padding: 1.7vw 1.25vw 1.7vw 2.5vw;
+  }
+  .currency_description .currency {
+    padding: 0.8vw 0.8vw 0.8vw 2.5vw;
+  }
+  details, .currency_title {
+    margin-bottom: 1.7vw;
+  }
+  .currency_marker::before {
+    left: 1.3vw;
+  }
+  .rotate-up, .rotate-down {
+    width: 1vw;
+    height: 1vw;
+    margin-right: 0.17vw
+  }
 } 
 </style>
