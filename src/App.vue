@@ -148,25 +148,20 @@ export default {
   text-overflow: ellipsis;
   overflow: auto;
 }
-
 body {
   padding: 1.5vw;
 }
-
 #app {
   display: flex;
 }
-
 .page {
   width: 100%;
 }
-
 .currencies {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
-
 .currency {
   display: grid;
   grid-template-columns: 14% 45% 19% 20%;
@@ -177,61 +172,48 @@ body {
   line-height: 16px;
   padding: 10px 5px 10px 15px;
 }
-
 .currency_title {
   font-weight: 700;
   padding: 10px 5px 10px 15px;
 }
-
 .currency_description .currency {
   padding: 4px 5px 4px 15px;
 }
-
 .currency_marker {
   position: relative;
 }
-
 .currency_marker::before {
   position: absolute;
   content: '›';
   left: 7.5px;
 }
-
 details[open] .currency_marker::before {
   content: '-';
 }
-
 details > summary {
   list-style: none;
 }
-
 details > summary::marker,
 details > summary::-webkit-details-marker {
   display: none;
 }
-
 details .currency {
   cursor: pointer;
 }
-
 details, .currency_title {
-  box-shadow: 1px 3px 2px rgba(#000, 0.05);
+  box-shadow: 1px 4px 4px 1px rgba(34, 60, 80, 0.1);
   margin-bottom: 12px;
 }
-
 .green {
   color:limegreen;
 }
-
 .red {
   color:crimson
 }
-
 .currency_gap {
   display: flex;
   align-items: center;
 }
-
 .rotate-up, .rotate-down {
   display: block;
   flex-shrink: 0;
@@ -239,7 +221,6 @@ details, .currency_title {
   height: 7px;
   margin-right: 2px;
 }
-
 .rotate-up {
   background: transparent url(@/img/arrowup.svg) no-repeat center / 90%;
 }
@@ -247,13 +228,39 @@ details, .currency_title {
   background: transparent url(@/img/arrow.svg) no-repeat center / 90%;
   transform: rotate(180deg);
 }
-
 details[open] summary ~ * {
   animation: uncover 0.3s linear;
 }
-
 @keyframes uncover {
   0%    {opacity: 0; margin-top: -10px}
   100%  {opacity: 1; margin-top: 0px}
 }
+
+@media screen and (min-width: 521px) {
+  body {
+    padding: 2.5vw;
+  }
+  .currency {
+    font-size: 3vw;
+    line-height: 3.2vw;
+    padding: 2.5vw 1.25vw 2.5vw 3.75vw;
+  }
+  .currency_title {
+    padding: 2.5vw 1.25vw 2.5vw 3.75vw;
+  }
+  .currency_description .currency {
+    padding: 1.25vw 1.25vw 1.25vw 3.75vw;
+  }
+  details, .currency_title {
+    margin-bottom: 2.5vw;
+  }
+  .currency_marker::before {
+    left: 2vw;
+  }
+  .rotate-up, .rotate-down {
+    width: 1.5vw;
+    height: 1.5vw;
+    margin-right: 0.25vw
+  }
+} 
 </style>
