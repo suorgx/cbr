@@ -37,7 +37,7 @@
       <div class="currency_description">
         <div class="currency">
           <div></div>
-          <div>{{  `${this.currentDate.substring(0, 4)} ${this.currentDate.substring(5, 7)} ${this.currentDate.substring(8, 10)} 11:30 MSK` }}</div>
+          <div>{{  `${this.dailyDate.substring(0, 4)} ${this.dailyDate.substring(5, 7)} ${this.dailyDate.substring(8, 10)} ${this.dailyDate.substring(11, 16)} MSK` }}</div>
           <div>{{  `${currency.Value.toFixed(2)} ₽` }}</div>
           <div>
             <div class="currency_gap green" v-if="currency.Value > currency.Previous">
@@ -62,19 +62,20 @@ export default {
     return {
       currencies: [],
       currenciesPrevious: [],
+      dailyDate: '',
       currentDate: '',
       previousDate: '',
+      dayOfMonth: '',
       isPageLoading: false,
-      count: 1,
+      count: 0,
     }
   },
   methods: {
     async fetchCurrencies() {
       try {
-        // console.log('Now -', 0)
         this.isPageLoading = true
         const response = await axios.get('https://www.cbr-xml-daily.ru/daily_json.js')
-        this.currentDate = response.data.Date
+        this.currentDate = this.dailyDate = response.data.Date
         this.currencies = response.data.Valute
       } catch(e) {
         console.log('ошибка 1')
@@ -84,24 +85,26 @@ export default {
     },
     async fetchPreviousCurrencies() {
       try {
-        // console.log('Previous -', 1)
         this.currenciesPrevious = []
-        let responsePrevious = await axios.get('https://www.cbr-xml-daily.ru/archive/2022/04/01/daily_json.js')
-        this.previousDate = responsePrevious.data.Date
+        let responsePrevious = await axios.get(`https://www.cbr-xml-daily.ru/archive/${this.getPreviousDay(this.currentDate.substring(0, 4), this.currentDate.substring(5, 7), this.currentDate.substring(8, 10))}/daily_json.js`)
+        this.previousDate = responsePrevious.data.PreviousDate
+        this.currentDate = responsePrevious.data.Date
         this.currenciesPrevious = responsePrevious.data.Valute
         this.addNewRow(this.currenciesPrevious)
       } catch(e) {
         console.log('ошибка 2')
+        this.dayOfMonth = (this.previousDate.substring(8, 10) < 10) ? `0${Number(this.previousDate.substring(8, 10))+1}` : `${Number(this.previousDate.substring(8, 10))+1}`
+        this.currentDate = this.previousDate.substring(0, 8) + this.dayOfMonth + this.previousDate.substring(10)
       } finally {
         this.count += 1
         // console.log('count -', this.count)
-        // if (this.count < 10) {
-        //   await this.fetchPreviousCurrencies()
-        // }
-        // if (this.count === 10) {
-        //   this.isPageLoading = false
-        // }
-        this.isPageLoading = false
+        if (this.count <= 10) {
+          await this.fetchPreviousCurrencies()
+        }
+        if (this.count > 10) {
+          this.isPageLoading = false
+        }
+        // this.isPageLoading = false
       }
     },
     addNewRow(array) {
@@ -112,15 +115,20 @@ export default {
               let element = document.createElement('div');
               element.classList.add('currency')
               if (array[item].Value > array[item].Previous) {
-                element.innerHTML = `<div></div><div>${this.previousDate.substring(0, 4)} ${this.previousDate.substring(5, 7)} ${this.previousDate.substring(8, 10)} 11:30 MSK</div><div>${array[item].Value.toFixed(2)} ₽</div><div class="currency_gap green"><span class="rotate-up">❱</span>${(-100 + (array[item].Value / array[item].Previous) * 100).toFixed(3)}%</div>`
+                element.innerHTML = `<div></div><div>${this.currentDate.substring(0, 4)} ${this.currentDate.substring(5, 7)} ${this.currentDate.substring(8, 10)} ${this.currentDate.substring(11, 16)}  MSK</div><div>${array[item].Value.toFixed(2)} ₽</div><div class="currency_gap green"><span class="rotate-up">❱</span>${(-100 + (array[item].Value / array[item].Previous) * 100).toFixed(3)}%</div>`
               } else {
-                element.innerHTML = `<div></div><div>${this.previousDate.substring(0, 4)} ${this.previousDate.substring(5, 7)} ${this.previousDate.substring(8, 10)} 11:30 MSK</div><div>${array[item].Value.toFixed(2)} ₽</div><div class="currency_gap red"><span class="rotate-down">❱</span>${(100 - (array[item].Value / array[item].Previous) * 100).toFixed(3)}%</div>`
+                element.innerHTML = `<div></div><div>${this.currentDate.substring(0, 4)} ${this.currentDate.substring(5, 7)} ${this.currentDate.substring(8, 10)} ${this.currentDate.substring(11, 16)} MSK</div><div>${array[item].Value.toFixed(2)} ₽</div><div class="currency_gap red"><span class="rotate-down">❱</span>${(100 - (array[item].Value / array[item].Previous) * 100).toFixed(3)}%</div>`
               }
               getCharsCodes[i].parentNode.parentNode.childNodes[1].appendChild(element);
             }
           }
         }
     },
+    getPreviousDay(year, month, day) {
+      let thisDay = new Date(year, month-1, day)
+      thisDay = thisDay.toISOString()
+      return `${thisDay.substring(0, 4)}/${thisDay.substring(5, 7)}/${thisDay.substring(8, 10)}`
+    }
   },
   mounted() {
       this.fetchCurrencies()
@@ -176,7 +184,7 @@ body {
 }
 
 .currency_description .currency {
-  padding: 5px;
+  padding: 4px 5px;
 }
 
 details > summary {
