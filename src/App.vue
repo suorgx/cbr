@@ -28,10 +28,10 @@
           {{ `${currency.Value.toFixed(2)} ₽` }}
         </div>
         <div class="currency_gap green" v-if="currency.Value > currency.Previous">
-          <span class="rotate-up">›</span>{{ `${(-100 + (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
+          <span class="rotate-up"></span>{{ `${(-100 + (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
         </div>
         <div class="currency_gap red" v-else>
-          <span class="rotate-down">›</span>{{ `${(100 - (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
+          <span class="rotate-down"></span>{{ `${(100 - (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
         </div>
       </summary>
       <div class="currency_description">
@@ -41,10 +41,10 @@
           <div>{{  `${currency.Value.toFixed(2)} ₽` }}</div>
           <div>
             <div class="currency_gap green" v-if="currency.Value > currency.Previous">
-              <span class="rotate-up">›</span>{{ `${(-100 + (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
+              <span class="rotate-up"></span>{{ `${(-100 + (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
             </div>
             <div class="currency_gap red" v-else>
-              <span class="rotate-down">›</span>{{ `${(100 - (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
+              <span class="rotate-down"></span>{{ `${(100 - (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
             </div>
           </div>
         </div>
@@ -115,9 +115,9 @@ export default {
               let element = document.createElement('div');
               element.classList.add('currency')
               if (array[item].Value > array[item].Previous) {
-                element.innerHTML = `<div></div><div>${this.currentDate.substring(0, 4)} ${this.currentDate.substring(5, 7)} ${this.currentDate.substring(8, 10)} ${this.currentDate.substring(11, 16)}  MSK</div><div>${array[item].Value.toFixed(2)} ₽</div><div class="currency_gap green"><span class="rotate-up">›</span>${(-100 + (array[item].Value / array[item].Previous) * 100).toFixed(3)}%</div>`
+                element.innerHTML = `<div></div><div>${this.currentDate.substring(0, 4)} ${this.currentDate.substring(5, 7)} ${this.currentDate.substring(8, 10)} ${this.currentDate.substring(11, 16)}  MSK</div><div>${array[item].Value.toFixed(2)} ₽</div><div class="currency_gap green"><span class="rotate-up"></span>${(-100 + (array[item].Value / array[item].Previous) * 100).toFixed(3)}%</div>`
               } else {
-                element.innerHTML = `<div></div><div>${this.currentDate.substring(0, 4)} ${this.currentDate.substring(5, 7)} ${this.currentDate.substring(8, 10)} ${this.currentDate.substring(11, 16)} MSK</div><div>${array[item].Value.toFixed(2)} ₽</div><div class="currency_gap red"><span class="rotate-down">›</span>${(100 - (array[item].Value / array[item].Previous) * 100).toFixed(3)}%</div>`
+                element.innerHTML = `<div></div><div>${this.currentDate.substring(0, 4)} ${this.currentDate.substring(5, 7)} ${this.currentDate.substring(8, 10)} ${this.currentDate.substring(11, 16)} MSK</div><div>${array[item].Value.toFixed(2)} ₽</div><div class="currency_gap red"><span class="rotate-down"></span>${(100 - (array[item].Value / array[item].Previous) * 100).toFixed(3)}%</div>`
               }
               getCharsCodes[i].parentNode.parentNode.childNodes[1].appendChild(element);
             }
@@ -136,7 +136,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="css">
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap');
 
 * {
@@ -215,7 +215,7 @@ details .currency {
 }
 
 details, .currency_title {
-  box-shadow: 1px 3px 2px rgba($color: #000, $alpha: 0.05);
+  box-shadow: 1px 3px 2px rgba(#000, 0.05);
   margin-bottom: 12px;
 }
 
@@ -229,23 +229,23 @@ details, .currency_title {
 
 .currency_gap {
   display: flex;
+  align-items: center;
 }
 
 .rotate-up, .rotate-down {
   display: block;
   flex-shrink: 0;
-  margin: 0 5px;
-}
-
-.green .rotate-up, .green .rotate-down {
-  margin: 0 6px 0 4px;
+  width: 7px;
+  height: 7px;
+  margin-right: 2px;
 }
 
 .rotate-up {
-  transform: rotate(-90deg);
+  background: transparent url(@/img/arrowup.svg) no-repeat center / 90%;
 }
 .rotate-down {
-  transform: rotate(90deg);
+  background: transparent url(@/img/arrow.svg) no-repeat center / 90%;
+  transform: rotate(180deg);
 }
 
 details[open] summary ~ * {
