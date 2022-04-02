@@ -17,7 +17,7 @@
       </div>
     </div>
     <details v-for="currency in currencies" :key="currency.id">
-      <summary class="currency">
+      <summary class="currency currency_marker">
         <div class="currency_charcode">
           {{ currency.CharCode }}
         </div>
@@ -28,10 +28,10 @@
           {{ `${currency.Value.toFixed(2)} ₽` }}
         </div>
         <div class="currency_gap green" v-if="currency.Value > currency.Previous">
-          <span class="rotate-up">❱</span>{{ `${(-100 + (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
+          <span class="rotate-up">›</span>{{ `${(-100 + (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
         </div>
         <div class="currency_gap red" v-else>
-          <span class="rotate-down">❱</span>{{ `${(100 - (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
+          <span class="rotate-down">›</span>{{ `${(100 - (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
         </div>
       </summary>
       <div class="currency_description">
@@ -41,10 +41,10 @@
           <div>{{  `${currency.Value.toFixed(2)} ₽` }}</div>
           <div>
             <div class="currency_gap green" v-if="currency.Value > currency.Previous">
-              <span class="rotate-up">❱</span>{{ `${(-100 + (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
+              <span class="rotate-up">›</span>{{ `${(-100 + (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
             </div>
             <div class="currency_gap red" v-else>
-              <span class="rotate-down">❱</span>{{ `${(100 - (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
+              <span class="rotate-down">›</span>{{ `${(100 - (currency.Value / currency.Previous) * 100).toFixed(3)}%` }}
             </div>
           </div>
         </div>
@@ -115,9 +115,9 @@ export default {
               let element = document.createElement('div');
               element.classList.add('currency')
               if (array[item].Value > array[item].Previous) {
-                element.innerHTML = `<div></div><div>${this.currentDate.substring(0, 4)} ${this.currentDate.substring(5, 7)} ${this.currentDate.substring(8, 10)} ${this.currentDate.substring(11, 16)}  MSK</div><div>${array[item].Value.toFixed(2)} ₽</div><div class="currency_gap green"><span class="rotate-up">❱</span>${(-100 + (array[item].Value / array[item].Previous) * 100).toFixed(3)}%</div>`
+                element.innerHTML = `<div></div><div>${this.currentDate.substring(0, 4)} ${this.currentDate.substring(5, 7)} ${this.currentDate.substring(8, 10)} ${this.currentDate.substring(11, 16)}  MSK</div><div>${array[item].Value.toFixed(2)} ₽</div><div class="currency_gap green"><span class="rotate-up">›</span>${(-100 + (array[item].Value / array[item].Previous) * 100).toFixed(3)}%</div>`
               } else {
-                element.innerHTML = `<div></div><div>${this.currentDate.substring(0, 4)} ${this.currentDate.substring(5, 7)} ${this.currentDate.substring(8, 10)} ${this.currentDate.substring(11, 16)} MSK</div><div>${array[item].Value.toFixed(2)} ₽</div><div class="currency_gap red"><span class="rotate-down">❱</span>${(100 - (array[item].Value / array[item].Previous) * 100).toFixed(3)}%</div>`
+                element.innerHTML = `<div></div><div>${this.currentDate.substring(0, 4)} ${this.currentDate.substring(5, 7)} ${this.currentDate.substring(8, 10)} ${this.currentDate.substring(11, 16)} MSK</div><div>${array[item].Value.toFixed(2)} ₽</div><div class="currency_gap red"><span class="rotate-down">›</span>${(100 - (array[item].Value / array[item].Previous) * 100).toFixed(3)}%</div>`
               }
               getCharsCodes[i].parentNode.parentNode.childNodes[1].appendChild(element);
             }
@@ -175,16 +175,30 @@ body {
   width: 100%;
   font-size: 14px;
   line-height: 16px;
-  padding: 10px 5px;
+  padding: 10px 5px 10px 15px;
 }
 
 .currency_title {
   font-weight: 700;
-  padding: 10px 5px;
+  padding: 10px 5px 10px 15px;
 }
 
 .currency_description .currency {
-  padding: 4px 5px;
+  padding: 4px 5px 4px 15px;
+}
+
+.currency_marker {
+  position: relative;
+}
+
+.currency_marker::before {
+  position: absolute;
+  content: '›';
+  left: 7.5px;
+}
+
+details[open] .currency_marker::before {
+  content: '-';
 }
 
 details > summary {
@@ -221,6 +235,10 @@ details, .currency_title {
   display: block;
   flex-shrink: 0;
   margin: 0 5px;
+}
+
+.green .rotate-up, .green .rotate-down {
+  margin: 0 6px 0 4px;
 }
 
 .rotate-up {
