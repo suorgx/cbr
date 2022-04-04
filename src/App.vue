@@ -67,7 +67,7 @@ export default {
       previousDate: '',
       dayOfMonth: '',
       isPageLoading: false,
-      count: 0,
+      count: 1,
     }
   },
   methods: {
@@ -76,6 +76,7 @@ export default {
         this.isPageLoading = true
         const response = await axios.get('https://www.cbr-xml-daily.ru/daily_json.js')
         this.currentDate = this.dailyDate = response.data.Date
+        this.previousDate = response.data.PreviousDate
         this.currencies = response.data.Valute
       } catch(e) {
         console.log('ошибка 1')
@@ -91,17 +92,17 @@ export default {
         this.currentDate = responsePrevious.data.Date
         this.currenciesPrevious = responsePrevious.data.Valute
         this.addNewRow(this.currenciesPrevious)
+        this.count += 1
       } catch(e) {
         console.log('ошибка 2')
         this.dayOfMonth = (this.previousDate.substring(8, 10) < 10) ? `0${Number(this.previousDate.substring(8, 10))+1}` : `${Number(this.previousDate.substring(8, 10))+1}`
         this.currentDate = this.previousDate.substring(0, 8) + this.dayOfMonth + this.previousDate.substring(10)
       } finally {
-        this.count += 1
         // console.log('count -', this.count)
-        if (this.count <= 10) {
+        if (this.count < 10) {
           await this.fetchPreviousCurrencies()
         }
-        if (this.count > 10) {
+        if (this.count >= 10) {
           this.isPageLoading = false
         }
         // this.isPageLoading = false
