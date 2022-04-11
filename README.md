@@ -1,19 +1,3 @@
-# cbr
+Прод версия сайта - https://suorgx.github.io/cbr/dist/
 
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Сайт о курсе рубля. Данные валют взяты с базы данных Центрального Банка РФ и обновляются вместе с базой данных. Написан на Vue 3
