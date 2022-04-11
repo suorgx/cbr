@@ -147,7 +147,6 @@ export default {
   font-family: 'Roboto Condensed', sans-serif;
   outline: none;
   text-overflow: ellipsis;
-  overflow: auto;
 }
 body {
   padding: 1.5vw;
