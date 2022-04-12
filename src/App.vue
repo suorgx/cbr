@@ -78,6 +78,7 @@ export default {
         this.currentDate = this.dailyDate = response.data.Date
         this.previousDate = response.data.PreviousDate
         this.currencies = response.data.Valute
+        // console.log(this.currentDate, this.previousDate)
       } catch(e) {
         console.log('ошибка 1')
       } finally {
@@ -90,13 +91,24 @@ export default {
         let responsePrevious = await axios.get(`https://www.cbr-xml-daily.ru/archive/${this.getPreviousDay(this.currentDate.substring(0, 4), this.currentDate.substring(5, 7), this.currentDate.substring(8, 10))}/daily_json.js`)
         this.previousDate = responsePrevious.data.PreviousDate
         this.currentDate = responsePrevious.data.Date
+        // console.log(this.currentDate, this.previousDate)
         this.currenciesPrevious = responsePrevious.data.Valute
         this.addNewRow(this.currenciesPrevious)
         this.count += 1
       } catch(e) {
         console.log('ошибка 2')
-        this.dayOfMonth = (this.previousDate.substring(8, 10) < 10) ? `0${Number(this.previousDate.substring(8, 10))+1}` : `${Number(this.previousDate.substring(8, 10))+1}`
+        if (this.previousDate.substring(8, 10) < 10) {
+          if (this.previousDate.substring(8, 10) === '09') {
+            this.dayOfMonth = `10`
+          } else {
+            this.dayOfMonth = `0${Number(this.previousDate.substring(8, 10))+1}`
+          }
+        } else {
+          this.dayOfMonth = `${Number(this.previousDate.substring(8, 10))+1}`
+        }
+        // this.dayOfMonth = (this.previousDate.substring(8, 10) < 10) ? `0${Number(this.previousDate.substring(8, 10))+1}` : `${Number(this.previousDate.substring(8, 10))+1}`
         this.currentDate = this.previousDate.substring(0, 8) + this.dayOfMonth + this.previousDate.substring(10)
+        // console.log(this.currentDate)
       } finally {
         // console.log('count -', this.count)
         if (this.count < 10) {
@@ -127,7 +139,9 @@ export default {
     },
     getPreviousDay(year, month, day) {
       let thisDay = new Date(year, month-1, day)
+      // console.log(year, month, day, thisDay)
       thisDay = thisDay.toISOString()
+      // console.log(year, month, day, thisDay)
       return `${thisDay.substring(0, 4)}/${thisDay.substring(5, 7)}/${thisDay.substring(8, 10)}`
     }
   },
