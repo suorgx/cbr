@@ -16,6 +16,7 @@
         Изменение
       </div>
     </div>
+    
     <details v-for="currency in currencies" :key="currency.id">
       <summary class="currency currency_marker">
         <div class="currency_charcode">
